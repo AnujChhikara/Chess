@@ -5,13 +5,13 @@ import { Chess } from "chess.js";
 import socket from "../socket";
 
 
-
 function Game({ players, room}) {
     
   const chess = useMemo(() => new Chess(), []); 
   const [fen, setFen] = useState(chess.fen()); 
-  const [over, setOver] = useState("");
-  const[playerData, setPlayerData] = useState()
+  const [result, setResult] = useState();
+  const [gameStatus, setGameStatus] = useState(false)
+  const[playerData, setPlayerData] = useState('')
 
   useEffect(()=> {
     if(players.length > 0){
@@ -29,16 +29,17 @@ function Game({ players, room}) {
         setFen(chess.fen()); 
   
         if (chess.isGameOver()) { 
+         setGameStatus(true)
           if (chess.isCheckmate()) { 
-          
-            setOver(
+            
+            setResult(
               `Checkmate! ${chess.turn() === "w" ? "black" : "white"} wins!`
             ); 
            
           } else if (chess.isDraw()) {
-            setOver("Draw"); 
+            setResult("Draw"); 
           } else {
-            setOver("Game over");
+            setResult("Game over");
           }
         }
   
@@ -86,41 +87,51 @@ function Game({ players, room}) {
  
   return (
  
-    <div className='px-20 pt-20 flex space-x-8'>
+    <div >
+        {gameStatus?   (
+          <div className="text-center w-screen h-screen flex items-center justify-center">
+            <img src="./chessboard.png" className="opacity-20" alt="" />
+           <div className="w-80 bg-gray-800 fixed h-80 border-4 text-center border-double">
+           <p>Game Result:- {result}</p>
+           <button  className="bg-green-500 px-6 py-2 rounded-lg">New Match</button>
+           </div>
+          </div>
+        )  :
+        <div className={`px-20 pt-20 flex space-x-8`}>
+        {playerData && <div>
+        
+
+          <div>  
+          <Chessboard
+          position={fen}
+          boardWidth={600}
+          onPieceDrop={onDrop}
+          boardOrientation={playerData.color}  
+        /> </div>
+          </div>}
+
+            
+          {playerData && playerData.index === 0 && ( <div className="flex flex-col h-[600px] justify-between">
+            <h3>{players[1].id}</h3>
+            <h3>{playerData.id}</h3>
+           </div>
+
+          )}
+
+           {playerData && playerData.index === 1 && (
+           <div className="flex flex-col h-[600px] justify-between">
+            <h3>{players[0].id}</h3>
+           <h3>{playerData.id}</h3>
+           </div>
+
+          )}
+     
+    </div>
       
-       
-          {playerData && <div>
-          
+      } 
 
-            <div>
 
-           
-            <Chessboard
-            position={fen}
-            boardWidth={600}
-            onPieceDrop={onDrop}
-            boardOrientation={playerData.color}  
-          /> </div>
-            </div>}
-
-              
-            {playerData.index === 0 && ( <div className="flex flex-col h-[600px] justify-between">
-              <h3>{players[1].id}</h3>
-              <h3>{playerData.id}</h3>
-             </div>
-
-            )}
-
-             {playerData.index === 1 && (
-             <div className="flex flex-col h-[600px] justify-between">
-              <h3>{players[0].id}</h3>
-             <h3>{playerData.id}</h3>
-             </div>
-
-            )}
-       
       </div>
-   
         
 
   );
