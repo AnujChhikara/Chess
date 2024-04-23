@@ -3,15 +3,23 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import socket from "../socket";
-import Modal from 'react-modal'
 
 
-function Game({ players, room, orientation,color}) {
+
+function Game({ players, room}) {
     
   const chess = useMemo(() => new Chess(), []); 
   const [fen, setFen] = useState(chess.fen()); 
   const [over, setOver] = useState("");
+  const[playerData, setPlayerData] = useState()
 
+  useEffect(()=> {
+    if(players.length > 0){
+      const playerIndex = players.findIndex(player => player.id === socket.id)
+      const playerData = players[playerIndex]
+      setPlayerData(playerData)
+    }
+  }, [players])
 
 
   const makeAMove = useCallback(
@@ -19,8 +27,6 @@ function Game({ players, room, orientation,color}) {
       try {
         const result = chess.move(move); 
         setFen(chess.fen()); 
-  
-        console.log("over, checkmate", chess.isGameOver(), chess.isCheckmate());
   
         if (chess.isGameOver()) { 
           if (chess.isCheckmate()) { 
@@ -47,13 +53,13 @@ function Game({ players, room, orientation,color}) {
 
   function onDrop(sourceSquare, targetSquare) {
 
-    const playerColor = color[players.findIndex(player => player.id === socket.id)];
+    const playerColor = playerData.color
     const isPlayersTurn = chess.turn() === (playerColor === 'white' ? 'w' : 'b');
     if (!isPlayersTurn) return false;
 
  
-    if (color === 'white' && chess.turn() !== 'w') return false; 
-    if (color === 'black' && chess.turn() !== 'b') return false;  
+    if (playerData.color === 'white' && chess.turn() !== 'w') return false; 
+    if (playerData.color === 'black' && chess.turn() !== 'b') return false;  
 
     if (players.length < 2) return false; 
 
@@ -77,46 +83,46 @@ function Game({ players, room, orientation,color}) {
       makeAMove(move); //
     });
   }, [makeAMove]);
-  
-  
-    
  
   return (
-    <div>
-      <div>
-        <div>Room ID: {room}</div>
-      </div>
-      <div>
-        <div style={{
-          maxWidth: 600,
-          maxHeight: 600,
-        }}>
-          <Chessboard
-            position={fen}
-            onPieceDrop={onDrop}
-            boardOrientation={orientation}
-          />
-        </div>
-        {players.length > 0 && (
-          <div>
+ 
+    <div className='px-20 pt-20 flex space-x-8'>
+      
+       
+          {playerData && <div>
+          
+
             <div>
-              <h3>Players</h3>
-              {players.map((player) => (
-                <li key={player.id}>
-                  <p>{player.username}</p>
-                </li>
-              ))}
-            </div>
-          </div>
-        )}
+
+           
+            <Chessboard
+            position={fen}
+            boardWidth={600}
+            onPieceDrop={onDrop}
+            boardOrientation={playerData.color}  
+          /> </div>
+            </div>}
+
+              
+            {playerData.index === 0 && ( <div className="flex flex-col h-[600px] justify-between">
+              <h3>{players[1].id}</h3>
+              <h3>{playerData.id}</h3>
+             </div>
+
+            )}
+
+             {playerData.index === 1 && (
+             <div className="flex flex-col h-[600px] justify-between">
+              <h3>{players[0].id}</h3>
+             <h3>{playerData.id}</h3>
+             </div>
+
+            )}
+       
       </div>
-      <Modal 
-        open={Boolean(over)}>
-          {over}
-        </Modal>
+   
         
-     
-    </div>
+
   );
 }
   

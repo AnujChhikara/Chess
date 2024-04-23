@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 import  { useState, useEffect } from 'react';
 import socket from '../socket';
-import Container from "@mui/material/Container";
-import StartGame from './StartGame';
+import StartGame from '../components/StartGame';
 import Game from '../components/Game';
 import { redirect } from 'react-router-dom';
 
@@ -12,18 +11,13 @@ export default function PlayingGamePage() {
     redirect('/')
   }
   const [room, setRoom] = useState("");
-  const [orientation, setOrientation] = useState("");
   const [players, setPlayers] = useState([]);
-  const[color, setColor]= useState("")
+
 
   useEffect(() => {
     socket.on("matchFound", (roomData) => {
       setRoom(roomData.roomId);
       setPlayers(roomData.players);
-      setOrientation(roomData.color)
-      setColor(roomData.color);
-      
-    
     });
   
     return () => {
@@ -32,24 +26,17 @@ export default function PlayingGamePage() {
   }, []);
 
   return (
-    <Container>
+    <div>
       {room ? (
-
+        
         <Game
           room={room}
-          orientation={orientation}
           players={players}
-          color={color}
         />
 
       ) : ( 
-        <StartGame
-          setRoom={setRoom}
-          setOrientation={setOrientation}
-          setPlayers={setPlayers}
-         
-        />
+        <StartGame/>
       )}
-    </Container>
+    </div>
   );
 }

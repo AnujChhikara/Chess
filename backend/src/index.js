@@ -64,13 +64,9 @@ io.on('connection', (socket) => {
         const roomData = {
             roomId,
             players: [
-                { id: player1.id, playername: player1.data?.playername },
-                { id: player2.id, playername: player2.data?.playername}
+                { id: player1.id, playername: player1.data?.playername, color:"white", index:0 },
+                { id: player2.id, playername: player2.data?.playername, color:"black", index:1}
             ], 
-            color:[
-              'white', 
-              'black'  
-            ]
         };
 
       
