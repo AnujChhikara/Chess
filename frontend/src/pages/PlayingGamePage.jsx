@@ -4,13 +4,17 @@ import socket from '../socket';
 import Container from "@mui/material/Container";
 import StartGame from './StartGame';
 import Game from '../components/Game';
+import { redirect } from 'react-router-dom';
 
 export default function PlayingGamePage() {
+  const username = localStorage.getItem('username')
+  if(!username){
+    redirect('/')
+  }
   const [room, setRoom] = useState("");
   const [orientation, setOrientation] = useState("");
   const [players, setPlayers] = useState([]);
   const[color, setColor]= useState("")
-  const [usernameSubmitted, setUsernameSubmitted] = useState(false);
 
   useEffect(() => {
     socket.on("matchFound", (roomData) => {
@@ -30,19 +34,20 @@ export default function PlayingGamePage() {
   return (
     <Container>
       {room ? (
+
         <Game
           room={room}
           orientation={orientation}
           players={players}
           color={color}
-          setUsernameSubmitted={setUsernameSubmitted} // Pass setUsernameSubmitted for cleanup
         />
-      ) : (
+
+      ) : ( 
         <StartGame
           setRoom={setRoom}
           setOrientation={setOrientation}
           setPlayers={setPlayers}
-          setUsernameSubmitted={setUsernameSubmitted} // Pass setUsernameSubmitted for cleanup
+         
         />
       )}
     </Container>

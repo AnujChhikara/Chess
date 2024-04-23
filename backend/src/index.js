@@ -1,17 +1,37 @@
-const express = require('express');
-const { Server } = require("socket.io");
-const { v4: uuidV4 } = require('uuid');
-const http = require('http');
+import dotenv from 'dotenv'
+import { connectDB } from "./db/index.js";
+import { app } from './App.js';
+import { Server as SocketIOServer } from "socket.io";
+import { v4 as uuidV4 } from 'uuid';
+import http from 'http';
 
-const app = express(); // initialize express
+dotenv.config({
+  path: './.env'
+})
+
+const port = process.env.PORT || 8080
 
 const server = http.createServer(app);
-const port = process.env.PORT || 8080 
-
-
-const io = new Server(server, {
-  cors: '*', 
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true
+  }
 });
+
+connectDB()
+.then(
+    server.listen(port, () => {
+        console.log(`Server is running at ${port}`);
+    })
+)
+.catch((err) => {
+    console.log("MONGO db connection failed", err);
+})
+
+
 
 const rooms = new Map();
 const waitingPlayers = [];
@@ -21,9 +41,9 @@ io.on('connection', (socket) => {
 
   console.log(socket.id, 'connected');
 
-  socket.on('username', (username) => {
-    console.log('username:', username);
-    socket.data.username = username;
+  socket.on('playername', (playername) => {
+    console.log('playername:', playername);
+    socket.data.playername = playername;
   });
 
   socket.on('joinQueue', () => {
@@ -44,8 +64,8 @@ io.on('connection', (socket) => {
         const roomData = {
             roomId,
             players: [
-                { id: player1.id, username: player1.data?.username },
-                { id: player2.id, username: player2.data?.username}
+                { id: player1.id, playername: player1.data?.playername },
+                { id: player2.id, playername: player2.data?.playername}
             ], 
             color:[
               'white', 
@@ -71,6 +91,3 @@ io.on('connection', (socket) => {
 });
 
 
-server.listen(port, () => {
-  console.log(`listening on *:${port}`);
-});

@@ -10,7 +10,6 @@ export default function StartGame({ setRoom, setOrientation, setPlayers, setUser
 
   const handleJoinQueue = () => {
     socket.emit('joinQueue');
-    setUsernameSubmitted(true); // Set username submitted to true
   };
 
 
