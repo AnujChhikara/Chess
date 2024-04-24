@@ -112,16 +112,16 @@ function Game({ players, room}) {
 
             
           {playerData && playerData.index === 0 && ( <div className="flex flex-col h-[600px] justify-between">
-            <h3>{players[1].id}</h3>
-            <h3>{playerData.id}</h3>
+            <h3>{players[1].playername}</h3>
+            <h3>{playerData.playername}</h3>
            </div>
 
           )}
 
            {playerData && playerData.index === 1 && (
            <div className="flex flex-col h-[600px] justify-between">
-            <h3>{players[0].id}</h3>
-           <h3>{playerData.id}</h3>
+            <h3>{players[0].playername}</h3>
+           <h3>{playerData.playername}</h3>
            </div>
 
           )}

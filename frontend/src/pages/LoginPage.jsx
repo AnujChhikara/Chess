@@ -1,12 +1,15 @@
 import { useState } from "react";
 import socket from "../socket";
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import { playerActions } from "../store/playerSlice";
 
 export default function LoginPage() {
 
   const [errorMsg, setErrorMessage] = useState('')
-    const[isProcessing, setIsProcessing] = useState(false)
+  const[isProcessing, setIsProcessing] = useState(false)
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const handleFormSubmittion = async(event) => {
     event.preventDefault()
@@ -29,9 +32,18 @@ export default function LoginPage() {
       })
       if(response.ok){
          const res_data = await response.json()
-        console.log(res_data)
+         const playerData = res_data.data
+         if(playerData){
+          dispatch(playerActions.updateUser({
+            playername:playerData.playername,
+            email:playerData.email,
+            id:playerData._id,
+            rating:playerData.rating
+          
+          }))
+         }
         
-        socket.emit("playername", data.playername);
+        socket.emit("playername",playerData.playername );
         navigate('/liveGame');
       
       }
