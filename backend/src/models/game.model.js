@@ -7,13 +7,20 @@ const chessGameSchema = new mongoose.Schema({
         unique: true
       },
       players: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Player',
+        type: String,
         required: true
       }],
       moves: [{
-        type: String
-      }],
+        color: String,
+        piece: String,
+        from: String,
+        to: String,
+        san: String,
+        flags: String,
+        lan: String,
+        before: String,
+        after: String
+    }],
       status: {
         type: String,
         enum: ['pending', 'active', 'finished'],

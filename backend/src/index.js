@@ -4,6 +4,7 @@ import { app } from './App.js';
 import { Server as SocketIOServer } from "socket.io";
 import { v4 as uuidV4 } from 'uuid';
 import http from 'http';
+import { ChessGame } from './models/game.model.js';
 
 dotenv.config({
   path: './.env'
@@ -31,6 +32,11 @@ connectDB()
     console.log("MONGO db connection failed", err);
 })
 
+// const redisClient = createClient({
+//   host: process.env.REDDIS_HOST,
+//   port: 17060, 
+//   password: process.env.REDDIS_PASSWORD
+// });
 
 
 const rooms = new Map();
@@ -42,11 +48,10 @@ io.on('connection', (socket) => {
   console.log(socket.id, 'connected');
 
   socket.on('playername', (playername) => {
-    console.log('playername:', playername);
     socket.data.playername = playername;
   });
 
-  socket.on('joinQueue', () => {
+  socket.on('joinQueue', async () => {
 
     waitingPlayers.push(socket);
 
@@ -68,10 +73,14 @@ io.on('connection', (socket) => {
                 { id: player2.id, playername: player2.data?.playername, color:"black", index:1}
             ], 
         };
-
-      
+        
+        // Create and save ChessGame document into MongoDB
+     const chessGame = await ChessGame.create({
+        gameId: roomId,
+        players: [player1.data?.playername,player2.data?.playername],
+        status: 'pending'
+      });
         rooms.set(roomId, roomData);
-
       
         player1.emit('matchFound', roomData);
         player2.emit('matchFound', roomData);
@@ -79,11 +88,19 @@ io.on('connection', (socket) => {
 });
 
  
-    socket.on('move', (data) => {
-    socket.to(data.room).emit('move', data.move);
-  });
+socket.on('move', async (data) => {
+  // Emit move event to other clients
+  socket.to(data.room).emit('move', data.move);
 
-  
+  // Save move data into MongoDB
+  await ChessGame.findOneAndUpdate(
+    { gameId: data.room },
+    { $push: { moves: data.move } },
+    { new: true }
+  );
 });
+});
+  
+
 
 
