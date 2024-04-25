@@ -22,6 +22,7 @@ function Game({ players, room}) {
   }, [players])
 
 
+ 
   const makeAMove = useCallback(
     (move) => {
       try {
@@ -84,12 +85,13 @@ function Game({ players, room}) {
       makeAMove(move); //
     });
   }, [makeAMove]);
- 
+
+  
   return (
  
-    <div >
+    <div className="bg-black w-screen h-screen " >
         {gameStatus?   (
-          <div className="text-center w-screen h-screen flex items-center justify-center">
+          <div className="text-center  flex items-center justify-center">
             <img src="./chessboard.png" className="opacity-20" alt="" />
            <div className="w-80 bg-gray-800 fixed h-80 border-4 text-center border-double">
            <p>Game Result:- {result}</p>
@@ -97,7 +99,7 @@ function Game({ players, room}) {
            </div>
           </div>
         )  :
-        <div className={`px-20 pt-20 flex space-x-8`}>
+        <div className={`px-20 pt-20 flex bg-black  space-x-8`}>
         {playerData && <div>
         
 
@@ -112,16 +114,16 @@ function Game({ players, room}) {
 
             
           {playerData && playerData.index === 0 && ( <div className="flex flex-col h-[600px] justify-between">
-            <h3>{players[1].playername}</h3>
-            <h3>{playerData.playername}</h3>
+            <h3 className={`text-lg bg-zinc-800 px-4 py-2 rounded-md font-bold ${chess.turn()==='w'? '': 'animate-pulse'} `}>{players[1].playername} ({players[1].rating})</h3>
+            <h3 className={`text-lg bg-zinc-800 px-4 py-2 rounded-md font-bold ${chess.turn()==='w'? 'animate-pulse': ''}`}>{playerData.playername}({playerData.rating})</h3>
            </div>
 
           )}
 
            {playerData && playerData.index === 1 && (
            <div className="flex flex-col h-[600px] justify-between">
-            <h3>{players[0].playername}</h3>
-           <h3>{playerData.playername}</h3>
+            <h3 className={`text-lg bg-zinc-800 px-4 py-2 rounded-md font-bold ${chess.turn()==='w'? 'animate-pulse': ''}`}>{players[0].playername}({players[0].rating})</h3>
+            <h3 className={`text-lg bg-zinc-800 px-4 py-2 rounded-md font-bold ${chess.turn()==='w'? '': 'animate-pulse'}`}>{playerData.playername}({playerData.rating})</h3>
            </div>
 
           )}

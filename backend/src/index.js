@@ -47,8 +47,9 @@ io.on('connection', (socket) => {
 
   console.log(socket.id, 'connected');
 
-  socket.on('playername', (playername) => {
-    socket.data.playername = playername;
+  socket.on('playerData', (playerData) => {
+    socket.data.playerData = playerData;   
+    
   });
 
   socket.on('joinQueue', async () => {
@@ -65,19 +66,18 @@ io.on('connection', (socket) => {
         player1.join(roomId);
         player2.join(roomId);
 
-   
         const roomData = {
             roomId,
             players: [
-                { id: player1.id, playername: player1.data?.playername, color:"white", index:0 },
-                { id: player2.id, playername: player2.data?.playername, color:"black", index:1}
+                { id: player1.id, playername: player1.data?.playerData.playername, color:"white", index:0, rating:player1.data?.playerData.rating },
+                { id: player2.id, playername: player2.data?.playerData.playername, color:"black", index:1, rating:player1.data?.playerData.rating}
             ], 
         };
         
         // Create and save ChessGame document into MongoDB
-     const chessGame = await ChessGame.create({
+     await ChessGame.create({
         gameId: roomId,
-        players: [player1.data?.playername,player2.data?.playername],
+        players: [player1.data?.playerData.playername,player2.data?.playerData.playername],
         status: 'pending'
       });
         rooms.set(roomId, roomData);

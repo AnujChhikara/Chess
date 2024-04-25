@@ -1,5 +1,4 @@
 import { useState } from "react";
-import socket from "../socket";
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { playerActions } from "../store/playerSlice";
@@ -43,8 +42,7 @@ export default function LoginPage() {
           }))
          }
         
-        socket.emit("playername",playerData.playername );
-        navigate('/liveGame');
+        navigate('/');
       
       }
       else{

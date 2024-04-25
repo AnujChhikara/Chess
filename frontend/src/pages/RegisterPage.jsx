@@ -1,11 +1,10 @@
 import { useState } from "react";
-import socket from "../socket";
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function RegisterPage() {
 
   const [errorMsg, setErrorMessage] = useState('')
- const[isProcessing, setIsProcessing] = useState(false)
+  const[isProcessing, setIsProcessing] = useState(false)
   const navigate = useNavigate();
 
   const handleFormSubmittion = async(event) => {
@@ -29,10 +28,8 @@ export default function RegisterPage() {
       })
       if(response.ok){
          const res_data = await response.json()
-        console.log(res_data)
-        
-        socket.emit("playername", data.playername);
-        navigate('/liveGame');
+         console.log(res_data)
+        navigate('/');
       
       }
       else{

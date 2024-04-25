@@ -16,7 +16,6 @@ export default function StartGame() {
 
   const handleJoinQueue = () => {
     setSearchingMatch(true)
-
     socket.emit('joinQueue');
   };
   const handleButtonClick = () => {
@@ -28,7 +27,7 @@ export default function StartGame() {
   };
 
   return (
-    <div className='flex justify-start items-start px-20 pt-20 space-x-12'>
+    <div className='flex bg-black w-screen h-screen justify-start items-start px-20 pt-20 space-x-12'>
       {/* get user data  */}
      <img className='w-[600px]' src='/chessboard.png' alt='chessboardImage'/>
          
