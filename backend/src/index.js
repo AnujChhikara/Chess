@@ -41,6 +41,7 @@ connectDB()
 
 const rooms = new Map();
 const waitingPlayers = [];
+const rematchPlayers = [];
 
 // socket.io connection
 io.on('connection', (socket) => {
@@ -57,7 +58,6 @@ io.on('connection', (socket) => {
     waitingPlayers.push(socket);
 
     if (waitingPlayers.length >= 2) {
-
         const player1 = waitingPlayers.shift();
         const player2 = waitingPlayers.shift();
 
@@ -86,6 +86,22 @@ io.on('connection', (socket) => {
         player2.emit('matchFound', roomData);
     }
 });
+
+// socket.on('rematchRequest', (roomId) => {
+//   socket.to(roomId).emit('rematchRequest', socket.id);
+// });
+
+// socket.on('rematchResponse', (response) => {
+//   const player = rematchPlayers.find(p => p.id === socket.id);
+//   if (player) {
+//     const roomId = player.roomId;
+//     if (response.accepted) {
+//       socket.to(roomId).emit('rematchAccepted');
+//     } else {
+//       socket.to(roomId).emit('rematchRejected');
+//     }
+//   }
+// });
 
  
 socket.on('move', async (data) => {
