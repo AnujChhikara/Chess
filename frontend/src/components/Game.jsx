@@ -100,10 +100,17 @@ function Game({ players, room}) {
 
 
   useEffect(() => {
+    socket.on('playerDisconnected', (player) => {
+      setGameStatus(true)
+      setResult(`${player.playername} has disconnected`); // set game over
+    });
+  }, []);
+
+
+
+  useEffect(() => {
     
       const interval = setInterval(() => {
-        console.log("inside timer function_1")
-        console.log("whoseTurn" + whoseTurn)
         if (whoseTurn === "b") {
           setWhiteTimer((prev) => (prev > 0 ? prev - 1 : prev)); // Decrease white timer
         } else {

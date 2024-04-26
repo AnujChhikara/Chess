@@ -87,21 +87,6 @@ io.on('connection', (socket) => {
     }
 });
 
-// socket.on('rematchRequest', (roomId) => {
-//   socket.to(roomId).emit('rematchRequest', socket.id);
-// });
-
-// socket.on('rematchResponse', (response) => {
-//   const player = rematchPlayers.find(p => p.id === socket.id);
-//   if (player) {
-//     const roomId = player.roomId;
-//     if (response.accepted) {
-//       socket.to(roomId).emit('rematchAccepted');
-//     } else {
-//       socket.to(roomId).emit('rematchRejected');
-//     }
-//   }
-// });
 
  
 socket.on('move', async (data) => {
@@ -115,6 +100,27 @@ socket.on('move', async (data) => {
     { new: true }
   );
 });
+
+ // Handling disconnection
+ socket.on("disconnect", () => {
+  const gameRooms = Array.from(rooms.values()); // <- 1
+
+  gameRooms.forEach((room) => { // <- 2
+    const userInRoom = room.players.find((player) => player.id === socket.id); // <- 3
+
+    if (userInRoom) {
+      if (room.players.length < 2) {
+        // if there's only 1 player in the room, close it and exit.
+        rooms.delete(room.roomId);
+        return;
+      }
+
+      socket.to(room.roomId).emit("playerDisconnected", userInRoom); // <- 4
+    }
+  });
+});
+
+
 });
   
 
