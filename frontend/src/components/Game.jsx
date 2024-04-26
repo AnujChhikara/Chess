@@ -15,7 +15,10 @@ function Game({ players, room}) {
     
   const chess = useMemo(() => new Chess(), []); 
   const [fen, setFen] = useState(chess.fen()); 
-  const [result, setResult] = useState();
+  const [result, setResult] = useState({
+    result:'',
+    winner:''
+  });
   const [gameStatus, setGameStatus] = useState(false)
   const[playerData, setPlayerData] = useState('')
   const[whiteTimer, setWhiteTimer] = useState(600)
@@ -45,11 +48,20 @@ function Game({ players, room}) {
           if (chess.isCheckmate()) { 
             
             setResult(
-              `Checkmate! ${chess.turn() === "w" ? "black" : "white"} wins!`
+              {
+                status:'checkmate',
+                winner: `${chess.turn() === "w" ? "black" : "white"}`
+              }
             ); 
            
           } else if (chess.isDraw()) {
-            setResult("Draw"); 
+            setResult(
+              {
+                status:'draw',
+                winner: ''
+              }
+            ); 
+           
           } else {
             setResult("Game over");
           }
@@ -102,9 +114,12 @@ function Game({ players, room}) {
   useEffect(() => {
     socket.on('playerDisconnected', (player) => {
       setGameStatus(true)
-      setResult(`${player.playername} has disconnected`); // set game over
+      setResult({
+        status:'disconnect',
+        winner:`${player.playername === playerData.playername? playerData.color==='white'? 'black': 'white': playerData.color==='white'? 'white': 'black'}`
+      }); 
     });
-  }, []);
+  }, [playerData]);
 
 
 
