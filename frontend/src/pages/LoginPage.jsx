@@ -38,7 +38,6 @@ export default function LoginPage() {
             email:playerData.email,
             id:playerData._id,
             rating:playerData.rating
-          
           }))
          }
         

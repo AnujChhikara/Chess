@@ -2,20 +2,28 @@
 /* eslint-disable react/prop-types */
 
 
-import { useState } from 'react';
+import {useState } from 'react';
 import Modal from 'react-awesome-modal';
 import socket from '../socket'
 
-export default function ResultModal({gameStatus, result, roomId, playerData}) {
+
+
+export default function ResultModal({gameStatus, result, roomId, cleanup}) {
 
     const [searchingMatch, setSearchingMatch] = useState(false) 
     let winner = result.winner
-    
-   
+    const[isOpen, setIsOpen] = useState(gameStatus)
+  
       const handleButtonClick = () => {
         setSearchingMatch(true)
         socket.emit('rematchRequest',roomId );
       };
+      const handleCloseModal = () => {
+        console.log('click')
+        cleanup()
+        setIsOpen(false)
+      }
+
    let response = ''
     if(result.status === 'disconnect'){
       response = `${result.winner === 'white' ? 'Black' : 'white'} player got disconnected!`
@@ -25,17 +33,25 @@ export default function ResultModal({gameStatus, result, roomId, playerData}) {
       response = 'Draw!'
     }
 
+    console.log(isOpen)
       
   return (
-    <Modal className="bg-zinc-800"
-     visible={gameStatus}
-        width="400"
-        height="300"
+    <Modal className=""
+     visible={isOpen}
+        width="450"
+        height="400"
         effect="fadeInUp"
-       onClickAway={() => this.closeModal()}
+       
         >
-            <div className='w-full h-full  space-y-4 flex-flex-col justify-center items-center bg-gray-600 text-white'>
+            <div className='w-full h-full  space-y-4 px-4 border-8 border-double border-orange-800 flex-flex-col justify-center items-center bg-[#ffa154] text-white'>
+     <div className='flex space-x-4 justify-center'>
+      <div>
      <p className="text-xl pt-4 font-bold font-mono text-center">{response}</p>
+     <p className='text-center text-xl font-bold'>You Won!</p>
+     </div>
+      <button onClick={handleCloseModal}>
+        <img className='w-8' src="https://www.svgrepo.com/show/157873/close-button.svg" alt="close modal" /></button>
+        </div>
      <div className='flex justify-around items-center'>
      <div className={`${result.status === 'draw'? '' :winner==='white'? 'border-4 p-2 border-green-500' : ''}`} >
        <svg fill="#ffffff" className="w-20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.189,18.757a1,1,0,0,0-.97-.757h-.933c-1.644-1.726-2.235-4.918-2.449-7H9.163c-.214,2.082-.8,5.274-2.449,7H5.781a1,1,0,0,0-.97.757L4,22H20Z"/><path d="M8,9h8a1,1,0,0,0,0-2h-.635a3.523,3.523,0,0,0,.278-1.357,3.643,3.643,0,0,0-7.286,0A3.523,3.523,0,0,0,8.635,7H8A1,1,0,0,0,8,9Z"/></svg>            

@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */
-import  { useState, useEffect } from 'react';
+
+import  { useState, useEffect, useCallback } from 'react';
 import socket from '../socket';
 import StartGame from '../components/StartGame';
 import Game from '../components/Game';
@@ -21,6 +21,12 @@ export default function PlayingGamePage() {
     };
   }, []);
 
+  const cleanup = useCallback(() => {
+    setRoom("");
+    setPlayers("");
+
+  }, []);
+
   return (
     <div>
       {room ? (
@@ -28,6 +34,7 @@ export default function PlayingGamePage() {
         <Game
           room={room}
           players={players}
+          cleanup={cleanup}
         />
 
       ) : ( 

@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import socket from "../socket";
+
 
 export default function HomePage() {
   const player = useSelector((state) => state.player) 
@@ -12,7 +12,6 @@ export default function HomePage() {
   } 
 
   const handleClick = () => {
-    socket.emit("playerData", player.playerData[0]);
     navigate('/liveGame');
   }
 
@@ -63,7 +62,10 @@ return (
   isAuth && 
   <div className="bg-black">
     <div className="text-end pt-6 pr-6">
-      <span className="bg-zinc-800 px-4 py-2 text-lg rounded-md font-bold cursor-pointer">{player.playerData[0].playername}</span>
+      <span className=" cursor-pointer"><span className="bg-zinc-800 px-4 py-2 text-lg rounded-md font-bold ">{player.playerData[0].playername}</span>
+      <div className="mt-2 text-lg rounded-md font-bold ">Current Rating: {player.playerData[0].rating}</div>
+      </span>
+      
   </div>
       
   <div className=" text-white min-h-screen flex flex-col justify-start pt-20 items-center">

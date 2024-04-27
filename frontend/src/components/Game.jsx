@@ -11,7 +11,7 @@ function formatTime(time) {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-function Game({ players, room}) {
+function Game({ players, room, cleanup}) {
     
   const chess = useMemo(() => new Chess(), []); 
   const [fen, setFen] = useState(chess.fen()); 
@@ -118,7 +118,9 @@ function Game({ players, room}) {
         status:'disconnect',
         winner:`${player.playername === playerData.playername? playerData.color==='white'? 'black': 'white': playerData.color==='white'? 'white': 'black'}`
       }); 
+      
     });
+  
   }, [playerData]);
 
 
@@ -146,7 +148,7 @@ function Game({ players, room}) {
        
         <div className={`px-20 pt-20 flex bg-black  space-x-8`}>
         {playerData && <div>
-          {gameStatus && <ResultModal result={result} gameStatus={gameStatus} roomId={room} playerData={playerData}/>}
+          {gameStatus && <ResultModal result={result} gameStatus={gameStatus} roomId={room} cleanup={cleanup}/>}
         
 
           <div>  

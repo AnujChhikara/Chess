@@ -82,5 +82,21 @@ const loginPlayer = asyncHandler(async(req,res)=>{
  
 })
 
-export {registerPlayer,
-    loginPlayer, }
+
+const getPlayerDetails = asyncHandler(async(req,res)=> {
+   const {id} = req.params
+
+   const player = await Player.findById(id).select("-password")
+
+   if(!player){
+      return res.status(400).json({msg:'No player found with the id'})
+   }
+
+   return res.status(200).json({msg:"user deatils fetch successfully", data:player})
+})
+
+
+export {
+   registerPlayer,
+   loginPlayer,
+   getPlayerDetails}

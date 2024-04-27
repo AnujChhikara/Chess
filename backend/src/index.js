@@ -5,6 +5,7 @@ import { Server as SocketIOServer } from "socket.io";
 import { v4 as uuidV4 } from 'uuid';
 import http from 'http';
 import { ChessGame } from './models/game.model.js';
+import { Player } from './models/player.model.js';
 
 dotenv.config({
   path: './.env'
@@ -69,8 +70,8 @@ io.on('connection', (socket) => {
         const roomData = {
             roomId,
             players: [
-                { id: player1.id, playername: player1.data?.playerData.playername, color:"white", index:0, rating:player1.data?.playerData.rating },
-                { id: player2.id, playername: player2.data?.playerData.playername, color:"black", index:1, rating:player1.data?.playerData.rating}
+                { id: player1.id, playername: player1.data?.playerData.playername,dbId:player1.data?.playerData._id, color:"white", index:0, rating:player1.data?.playerData.rating },
+                { id: player2.id, playername: player2.data?.playerData.playername,dbId:player2.data?.playerData._id, color:"black", index:1, rating:player2.data?.playerData.rating}
             ], 
         };
         
@@ -102,10 +103,11 @@ socket.on('move', async (data) => {
 });
 
  // Handling disconnection
- socket.on("disconnect", () => {
+ socket.on("disconnect",  () => {
   const gameRooms = Array.from(rooms.values()); // <- 1
 
-  gameRooms.forEach((room) => { // <- 2
+  //finding disconnected player in any room
+  gameRooms.forEach(async (room) => { // <- 2
     const userInRoom = room.players.find((player) => player.id === socket.id); // <- 3
 
     if (userInRoom) {
@@ -114,11 +116,26 @@ socket.on('move', async (data) => {
         rooms.delete(room.roomId);
         return;
       }
+   
+      const looser = userInRoom
+      const winner = room.players[userInRoom.index === 0? 1: 0]
+      console.log(looser, winner)
+      await Player.findByIdAndUpdate(looser.dbId, 
+        { $inc: { rating: -10} },
+        { new: true } 
+      )
+        await Player.findByIdAndUpdate(winner.dbId, 
+          { $inc: { rating: +10} },
+          { new: true } 
+        )
 
+   console.log(winner)
       socket.to(room.roomId).emit("playerDisconnected", userInRoom); // <- 4
     }
   });
 });
+
+
 
 
 });

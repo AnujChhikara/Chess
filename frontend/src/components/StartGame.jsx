@@ -2,9 +2,10 @@ import { useState } from 'react';
 import socket from '../socket';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-
+import { getPlayerbyId } from '../functions';
 
 export default function StartGame() {
+
   const [searchingMatch, setSearchingMatch] = useState(false)
   const player = useSelector((state) => state.player) 
   const [showLoginMessage, setShowLoginMessage] = useState(false);
@@ -18,8 +19,17 @@ export default function StartGame() {
     setSearchingMatch(true)
     socket.emit('joinQueue');
   };
-  const handleButtonClick = () => {
+ 
+ 
+  const handleButtonClick = async () => {
     if (isAuth) {
+      const response  = await getPlayerbyId({id:player.playerData[0].id})
+      if(response.status === true){
+        console.log(response.data)
+        const data = response.data
+        socket.emit("playerData", data);
+       }
+     
       handleJoinQueue();
     } else {
       setShowLoginMessage(true);
