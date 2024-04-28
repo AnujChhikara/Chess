@@ -136,7 +136,6 @@ socket.on('move', async (data) => {
 
   //handle resignation
   socket.on('resignation', async (playerData) => {
-    console.log('resign triggers')
     const gameRooms = Array.from(rooms.values());
   
     gameRooms.forEach(async (room) => {
@@ -155,11 +154,48 @@ socket.on('move', async (data) => {
           { $inc: { rating: +10 } },
           { new: true }
         );
-         console.log(resignBy, room.roomId)
          socket.to(room.roomId).emit("resignation", resignBy);
       }
     });
   });
+  
+  //handle offer draw
+
+  //offering draw
+
+  socket.on('drawOffer', (playerData) => {
+    const gameRooms = Array.from(rooms.values());
+  
+    gameRooms.forEach(async (room) => {
+      const drawOfferBy = room.players.find((player) => player.id === playerData.id);
+  
+      if (drawOfferBy) {
+         socket.to(room.roomId).emit("drawOffer");
+      }
+    });
+  });
+
+
+  //handle draw response
+  socket.on('drawResponse', (data) => {
+
+    const gameRooms = Array.from(rooms.values());
+  
+    gameRooms.forEach(async (room) => {
+      const drawResponse = room.players.find((player) => player.id === data.playerData.id);
+  
+      if (data.response) {
+         socket.to(room.roomId).emit("drawResponse", true);
+      } 
+      else{
+        socket.to(room.roomId).emit("drawResponse", false);
+      }
+    });
+
+      })
+   
+  
+  
   
 
 });

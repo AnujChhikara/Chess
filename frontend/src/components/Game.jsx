@@ -24,10 +24,9 @@ function Game({ players, room, cleanup}) {
   const[playerData, setPlayerData] = useState('')
   const[whiteTimer, setWhiteTimer] = useState(600)
   const[blackTimer, setBlackTimer] = useState(600)
-
- const whoseTurn = chess.turn()
+  const[drawOffered, setDrawOffered] = useState(false)
+   const whoseTurn = chess.turn()
  
-
 
   useEffect(()=> {
     if(players.length > 0){
@@ -111,7 +110,7 @@ function Game({ players, room, cleanup}) {
     
   }, [makeAMove]);
 
-
+//player disconnected socket
   useEffect(() => {
     socket.on('playerDisconnected', (player) => {
       setGameStatus(true)
@@ -124,6 +123,8 @@ function Game({ players, room, cleanup}) {
   
   }, [playerData]);
 
+
+//handle resign button
   const handleResign = () => {
     setIsResign(true)
     socket.emit('resignation', playerData);
@@ -144,6 +145,41 @@ function Game({ players, room, cleanup}) {
     });
   }, [isResign, playerData]);
 
+  //handle draw offer
+
+  const handleDrawOffer = () => {
+    socket.emit('drawOffer', playerData)
+  }
+
+  useEffect(() => {
+    socket.on('drawOffer' , () => {
+    setDrawOffered(true)
+    });
+  }, []);
+
+  const handleDrawResponse = (response) => {
+    setDrawOffered(false)
+    socket.emit('drawResponse', { playerData: playerData, response: response }) 
+    if(response){
+      setGameStatus(true)
+      setResult({
+        status:'draw',
+        winner:''})
+    }
+  };
+
+  //draw accepted or not
+  useEffect(() => {
+    socket.on('drawResponse', (response) => {
+     if(response){
+      setGameStatus(true)
+      setResult({
+        status:'draw',
+        winner: ''
+      }); 
+     }
+    });
+  }, [playerData]);
 
 
 
@@ -185,6 +221,16 @@ function Game({ players, room, cleanup}) {
             
           {playerData && !gameStatus && playerData.index === 0 && ( <div className="flex flex-col h-[500px] justify-between">
             <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p><h5 >{players[1].playername} ({players[1].rating})</h5> </div>
+            {
+              drawOffered && <div className="flex  flex-col space-y-4 px-4 py-2 border rounded-xl shadow-white shadow-sm border-zinc-900">
+            <p className="text-lg font-bold">Other player offered a draw</p>
+            <div className="flex justify-around ">
+            <button onClick={() => handleDrawResponse(true)} className="bg-zinc-900 px-2 py-1 rounded-lg">Accept</button> 
+            <button onClick={() => handleDrawResponse(false)} className="bg-zinc-900 px-2 py-1 rounded-lg">Decline</button>
+            </div>
+          
+              </div>
+            }
             <div className="flex flex-col items-start space-y-3">
             <button onClick={handleResign} className="bg-zinc-900 p-2 rounded w-12">
             <svg className="h-5 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#bababa">
@@ -194,7 +240,7 @@ function Game({ players, room, cleanup}) {
             </svg>
             </button>
 
-            <button className="bg-zinc-900 p-2 rounded font-bold w-12">
+            <button onClick={handleDrawOffer} className="bg-zinc-900 p-2 rounded font-bold w-12">
               1/2
             </button>
             <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {playerData.playername}({playerData.rating})</div>
@@ -206,6 +252,16 @@ function Game({ players, room, cleanup}) {
            {playerData && !gameStatus && playerData.index === 1 && (
            <div className="flex flex-col h-[500px] justify-between">
             <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {players[0].playername}({players[0].rating})</div>
+            {
+           drawOffered && <div className="flex  flex-col space-y-4 px-4 py-2 border rounded-xl shadow-white shadow-sm border-zinc-900">
+        <p className="text-lg font-bold">Other player offered a draw</p>
+        <div className="flex justify-around ">
+        <button onClick={() => handleDrawResponse(true)} className="bg-zinc-900 px-2 py-1 rounded-lg">Accept</button> 
+        <button onClick={() => handleDrawResponse(false)} className="bg-zinc-900 px-2 py-1 rounded-lg">Decline</button>
+        </div>
+      
+      </div>
+    }
             <div className="flex flex-col items-start space-y-3">
             <button onClick={handleResign} className="bg-zinc-900 p-2 rounded w-12">
             <svg className="h-5 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#bababa">
@@ -215,17 +271,18 @@ function Game({ players, room, cleanup}) {
             </svg>
             </button>
 
-            <button className="bg-zinc-900 p-2 rounded font-bold w-12">
+            <button onClick={handleDrawOffer} className="bg-zinc-900 p-2 rounded font-bold w-12">
               1/2
             </button>
               <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p> {playerData.playername}({playerData.rating})</div>
             </div>
            
            </div>
-
+            
           )}
      
     </div>
+ 
       </div>
         
 
