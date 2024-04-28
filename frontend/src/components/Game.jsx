@@ -11,7 +11,7 @@ function formatTime(time) {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-function Game({ players, room, cleanup}) {
+function Game({ players, room, cleanup, closeModal}) {
     
   const chess = useMemo(() => new Chess(), []); 
   const [fen, setFen] = useState(chess.fen()); 
@@ -206,7 +206,7 @@ function Game({ players, room, cleanup}) {
        
         <div className={`px-20 pt-20 flex bg-black  space-x-8`}>
         {playerData && <div>
-          {gameStatus && <ResultModal result={result} gameStatus={gameStatus} playerData={playerData} roomId={room} cleanup={cleanup}/>}
+          {gameStatus && <ResultModal closeModal={closeModal} result={result} gameStatus={gameStatus} playerData={playerData} roomId={room} cleanup={cleanup}/>}
         
 
           <div>  

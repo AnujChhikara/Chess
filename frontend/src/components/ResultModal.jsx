@@ -7,11 +7,9 @@ import Modal from 'react-awesome-modal';
 import socket from '../socket'
 
 
-
-export default function ResultModal({gameStatus, result, roomId, cleanup, playerData}) {
-
+export default function ResultModal({gameStatus, result, cleanup,closeModal, playerData}) {
+    
     const [searchingMatch, setSearchingMatch] = useState(false) 
-    let winner = result.winner
     const[isOpen, setIsOpen] = useState(gameStatus)
   
       const handleCloseModal = () => {
@@ -21,7 +19,6 @@ export default function ResultModal({gameStatus, result, roomId, cleanup, player
       }
 
     const handleJoinQueue = () => {
-      cleanup()
       setSearchingMatch(true)
       socket.emit('joinQueue');
     };
@@ -29,7 +26,7 @@ export default function ResultModal({gameStatus, result, roomId, cleanup, player
       
   return (
     <Modal className=""
-     visible={isOpen}
+     visible={closeModal ? false : isOpen}
         width="300"
         height="400"
         effect="fadeInUp"

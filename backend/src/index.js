@@ -55,18 +55,17 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinQueue', async () => {
-
+        console.log('joinQueueTriggered')
+       
     waitingPlayers.push(socket);
 
     if (waitingPlayers.length >= 2) {
         const player1 = waitingPlayers.shift();
         const player2 = waitingPlayers.shift();
 
-
         const roomId = uuidV4();
         player1.join(roomId);
         player2.join(roomId);
-
         const roomData = {
             roomId,
             players: [

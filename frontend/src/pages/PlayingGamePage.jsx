@@ -8,10 +8,13 @@ export default function PlayingGamePage() {
   
   const [room, setRoom] = useState("");
   const [players, setPlayers] = useState([]);
-
+  const[closeModal, setCloseModal] = useState(false)
 
   useEffect(() => {
     socket.on("matchFound", (roomData) => {
+      setCloseModal(true)
+      console.log('macthfound')
+      console.log(roomData)
       setRoom(roomData.roomId);
       setPlayers(roomData.players);
     });
@@ -32,6 +35,7 @@ export default function PlayingGamePage() {
       {room ? (
         
         <Game
+          closeModal={closeModal}
           room={room}
           players={players}
           cleanup={cleanup}
