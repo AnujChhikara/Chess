@@ -39,7 +39,7 @@ export default function StartGame() {
   return (
     <div className='flex bg-black w-screen h-screen justify-start items-start px-20 pt-20 space-x-12'>
       {/* get user data  */}
-     <img className='w-[600px]' src='/chessboard.png' alt='chessboardImage'/>
+     <img className='w-[500px]' src='/chessboard.png' alt='chessboardImage'/>
          
       {
       !showLoginMessage && searchingMatch? <button disabled className='bg-green-500 text-lg animate-pulse  font-bold px-6 py-2 rounded-xl' >

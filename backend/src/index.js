@@ -57,6 +57,7 @@ io.on('connection', (socket) => {
   socket.on('joinQueue', async () => {
 
     waitingPlayers.push(socket);
+    console.log('joinqueue triggered')
 
     if (waitingPlayers.length >= 2) {
         const player1 = waitingPlayers.shift();
@@ -119,7 +120,6 @@ socket.on('move', async (data) => {
    
       const looser = userInRoom
       const winner = room.players[userInRoom.index === 0? 1: 0]
-      console.log(looser, winner)
       await Player.findByIdAndUpdate(looser.dbId, 
         { $inc: { rating: -10} },
         { new: true } 

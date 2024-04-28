@@ -68,8 +68,8 @@ return (
       
   </div>
       
-  <div className=" text-white min-h-screen flex flex-col justify-start pt-20 items-center">
-  <h1 className="text-4xl font-bold mb-8">Welcome to Chess Online</h1>
+  <div className=" text-white min-h-screen flex flex-col justify-start  items-center">
+  <h1 className="text-4xl font-bold mb-2">Welcome to Chess Online</h1>
   <p className="text-lg text-gray-300 mb-12 max-w-xl text-center">Play chess online with players from around the world!</p>
   
     <div className=" flex space-x-12">
@@ -88,6 +88,10 @@ return (
             <li>Teaches you how to deal with unexpected situations is life like depression</li>
             
           </ul>
+          <button onClick={handleClick} className="bg-blue-500 mt-8 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300">
+    Play Online
+  </button>
+          
       </div>
      
     </div>
@@ -97,9 +101,7 @@ return (
       <p className="text-sm">Connect with fellow chess enthusiasts in our vibrant community forums. Discuss strategies, share tips, and make new friends!</p>
     </div>
  
-  <button onClick={handleClick} className="bg-blue-500 mt-8 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300">
-    Play Online
-  </button>
+  
 </div></div>
 }
 

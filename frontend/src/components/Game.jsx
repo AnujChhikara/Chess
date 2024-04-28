@@ -154,24 +154,24 @@ function Game({ players, room, cleanup}) {
           <div>  
           <Chessboard
           position={fen}
-          boardWidth={600}
+          boardWidth={500}
           onPieceDrop={onDrop}
           boardOrientation={playerData.color}  
         /> </div>
           </div>}
 
             
-          {playerData && playerData.index === 0 && ( <div className="flex flex-col h-[600px] justify-between">
+          {playerData && !gameStatus && playerData.index === 0 && ( <div className="flex flex-col h-[500px] justify-between">
             <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold ${chess.turn()==='w'? '': 'animate-pulse'} `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p><h5 >{players[1].playername} ({players[1].rating})</h5> </div>
             <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold ${chess.turn()==='w'? 'animate-pulse': ''}`}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {playerData.playername}({playerData.rating})</div>
            </div>
 
           )}
 
-           {playerData && playerData.index === 1 && (
-           <div className="flex flex-col h-[600px] justify-between">
-            <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold ${chess.turn()==='w'? 'animate-pulse': ''}`}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {players[0].playername}({players[0].rating})</div>
-            <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold ${chess.turn()==='w'? '': 'animate-pulse'}`}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p> {playerData.playername}({playerData.rating})</div>
+           {playerData && !gameStatus && playerData.index === 1 && (
+           <div className="flex flex-col h-[500px] justify-between">
+            <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {players[0].playername}({players[0].rating})</div>
+            <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p> {playerData.playername}({playerData.rating})</div>
            </div>
 
           )}

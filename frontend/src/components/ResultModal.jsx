@@ -14,10 +14,6 @@ export default function ResultModal({gameStatus, result, roomId, cleanup}) {
     let winner = result.winner
     const[isOpen, setIsOpen] = useState(gameStatus)
   
-      const handleButtonClick = () => {
-        setSearchingMatch(true)
-        socket.emit('rematchRequest',roomId );
-      };
       const handleCloseModal = () => {
         console.log('click')
         cleanup()
@@ -33,45 +29,46 @@ export default function ResultModal({gameStatus, result, roomId, cleanup}) {
       response = 'Draw!'
     }
 
-    console.log(isOpen)
+    const handleJoinQueue = () => {
+      setIsOpen(false)
+      setSearchingMatch(true)
+      socket.emit('joinQueue');
+    };
+   
       
   return (
     <Modal className=""
      visible={isOpen}
-        width="450"
+        width="300"
         height="400"
         effect="fadeInUp"
        
         >
-            <div className='w-full h-full  space-y-4 px-4 border-8 border-double border-orange-800 flex-flex-col justify-center items-center bg-[#ffa154] text-white'>
-     <div className='flex space-x-4 justify-center'>
-      <div>
-     <p className="text-xl pt-4 font-bold font-mono text-center">{response}</p>
-     <p className='text-center text-xl font-bold'>You Won!</p>
-     </div>
-      <button onClick={handleCloseModal}>
-        <img className='w-8' src="https://www.svgrepo.com/show/157873/close-button.svg" alt="close modal" /></button>
+  <div className='w-full h-full  space-y-4  flex-flex-col justify-center items-center bg-[#20201f] text-white'>
+     <div className='bg-[#333330] w-full h-1/4'>
+       {/* img based on result */}
+       {
+        result.status === 'draw' && <div className='px-2 flex justify-around items-center pt-4'>
+        <img className='h-16' src="https://img.icons8.com/external-flat-icons-inmotus-design/67/external-Half-mathematics-geometry-flat-icons-inmotus-design.png" alt="external-Half-mathematics-geometry-flat-icons-inmotus-design"/>
+        <h4 className='font-bold text-2xl'>Game Draw!</h4>
+        <button onClick={handleCloseModal}><img className='w-6' src="https://www.svgrepo.com/show/475751/cross.svg" alt="" /></button>
+        
+    
+
+        </div> 
+       } 
+      {
+        result.status === 'checkmate' && <div>
+           <img className='w-16' src="https://www.svgrepo.com/show/484306/trophy.svg" alt="" />
+       <img className='w-16' src="https://www.svgrepo.com/show/348920/sad.svg" alt="" />
         </div>
-     <div className='flex justify-around items-center'>
-     <div className={`${result.status === 'draw'? '' :winner==='white'? 'border-4 p-2 border-green-500' : ''}`} >
-       <svg fill="#ffffff" className="w-20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.189,18.757a1,1,0,0,0-.97-.757h-.933c-1.644-1.726-2.235-4.918-2.449-7H9.163c-.214,2.082-.8,5.274-2.449,7H5.781a1,1,0,0,0-.97.757L4,22H20Z"/><path d="M8,9h8a1,1,0,0,0,0-2h-.635a3.523,3.523,0,0,0,.278-1.357,3.643,3.643,0,0,0-7.286,0A3.523,3.523,0,0,0,8.635,7H8A1,1,0,0,0,8,9Z"/></svg>            
+      }
+      
+      
+       
      </div>
-     <p className=' text-2xl'>---</p>
-     <div className={`${result.status === 'draw'? '' :winner==='white'? '' : 'border-4 p-2 border-green-500'}`}>
-        <svg fill="#000000" className="w-20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.189,18.757a1,1,0,0,0-.97-.757h-.933c-1.644-1.726-2.235-4.918-2.449-7H9.163c-.214,2.082-.8,5.274-2.449,7H5.781a1,1,0,0,0-.97.757L4,22H20Z"/><path d="M8,9h8a1,1,0,0,0,0-2h-.635a3.523,3.523,0,0,0,.278-1.357,3.643,3.643,0,0,0-7.286,0A3.523,3.523,0,0,0,8.635,7H8A1,1,0,0,0,8,9Z"/></svg>
-     </div>
-     
-   
-     
-     </div>
-     <div className='w-full flex justify-center pt-8'>
 
     
-     {
-        searchingMatch? <button disabled className='bg-green-500 animate:pulse text-lg font-bold px-6 py-2 rounded-xl'>sending rematch request</button>:
-        <button onClick={handleButtonClick} className='bg-green-500 text-lg font-bold px-6 py-2 rounded-xl'>Rematch</button>
-     }
-     </div>
      </div>
    
     </Modal>
