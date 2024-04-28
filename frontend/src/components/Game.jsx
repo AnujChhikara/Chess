@@ -20,6 +20,7 @@ function Game({ players, room, cleanup}) {
     winner:''
   });
   const [gameStatus, setGameStatus] = useState(false)
+  const [isResign, setIsResign] = useState(false)
   const[playerData, setPlayerData] = useState('')
   const[whiteTimer, setWhiteTimer] = useState(600)
   const[blackTimer, setBlackTimer] = useState(600)
@@ -123,6 +124,27 @@ function Game({ players, room, cleanup}) {
   
   }, [playerData]);
 
+  const handleResign = () => {
+    setIsResign(true)
+    socket.emit('resignation', playerData);
+    setGameStatus(true)
+    setResult({
+      status:'resignation',
+      winner:`${playerData.color === 'white'? 'black' : 'white'}`
+    }); 
+  };
+
+  useEffect(() => {
+    socket.on('resignation', (player) => {
+      setGameStatus(true)
+      setResult({
+        status:'resignation',
+        winner:`${player.playername === playerData.playername? playerData.color==='white'? 'black': 'white': playerData.color==='white'? 'white': 'black'}`
+      }); 
+    });
+  }, [isResign, playerData]);
+
+
 
 
   useEffect(() => {
@@ -148,7 +170,7 @@ function Game({ players, room, cleanup}) {
        
         <div className={`px-20 pt-20 flex bg-black  space-x-8`}>
         {playerData && <div>
-          {gameStatus && <ResultModal result={result} gameStatus={gameStatus} roomId={room} cleanup={cleanup}/>}
+          {gameStatus && <ResultModal result={result} gameStatus={gameStatus} playerData={playerData} roomId={room} cleanup={cleanup}/>}
         
 
           <div>  
@@ -162,8 +184,21 @@ function Game({ players, room, cleanup}) {
 
             
           {playerData && !gameStatus && playerData.index === 0 && ( <div className="flex flex-col h-[500px] justify-between">
-            <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold ${chess.turn()==='w'? '': 'animate-pulse'} `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p><h5 >{players[1].playername} ({players[1].rating})</h5> </div>
-            <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold ${chess.turn()==='w'? 'animate-pulse': ''}`}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {playerData.playername}({playerData.rating})</div>
+            <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p><h5 >{players[1].playername} ({players[1].rating})</h5> </div>
+            <div className="flex flex-col items-start space-y-3">
+            <button onClick={handleResign} className="bg-zinc-900 p-2 rounded w-12">
+            <svg className="h-5 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#bababa">
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"/>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"/>
+                <g id="SVGRepo_iconCarrier"> <path d="M5 21V3.90002C5 3.90002 5.875 3 8.5 3C11.125 3 12.875 4.8 15.5 4.8C18.125 4.8 19 3.9 19 3.9V14.7C19 14.7 18.125 15.6 15.5 15.6C12.875 15.6 11.125 13.8 8.5 13.8C5.875 13.8 5 14.7 5 14.7" stroke="#bababa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/> </g>
+            </svg>
+            </button>
+
+            <button className="bg-zinc-900 p-2 rounded font-bold w-12">
+              1/2
+            </button>
+            <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {playerData.playername}({playerData.rating})</div>
+           </div>
            </div>
 
           )}
@@ -171,7 +206,21 @@ function Game({ players, room, cleanup}) {
            {playerData && !gameStatus && playerData.index === 1 && (
            <div className="flex flex-col h-[500px] justify-between">
             <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {players[0].playername}({players[0].rating})</div>
-            <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p> {playerData.playername}({playerData.rating})</div>
+            <div className="flex flex-col items-start space-y-3">
+            <button onClick={handleResign} className="bg-zinc-900 p-2 rounded w-12">
+            <svg className="h-5 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#bababa">
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"/>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"/>
+                <g id="SVGRepo_iconCarrier"> <path d="M5 21V3.90002C5 3.90002 5.875 3 8.5 3C11.125 3 12.875 4.8 15.5 4.8C18.125 4.8 19 3.9 19 3.9V14.7C19 14.7 18.125 15.6 15.5 15.6C12.875 15.6 11.125 13.8 8.5 13.8C5.875 13.8 5 14.7 5 14.7" stroke="#bababa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/> </g>
+            </svg>
+            </button>
+
+            <button className="bg-zinc-900 p-2 rounded font-bold w-12">
+              1/2
+            </button>
+              <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p> {playerData.playername}({playerData.rating})</div>
+            </div>
+           
            </div>
 
           )}

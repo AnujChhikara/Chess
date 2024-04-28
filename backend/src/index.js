@@ -57,7 +57,6 @@ io.on('connection', (socket) => {
   socket.on('joinQueue', async () => {
 
     waitingPlayers.push(socket);
-    console.log('joinqueue triggered')
 
     if (waitingPlayers.length >= 2) {
         const player1 = waitingPlayers.shift();
@@ -129,14 +128,39 @@ socket.on('move', async (data) => {
           { new: true } 
         )
 
-   console.log(winner)
       socket.to(room.roomId).emit("playerDisconnected", userInRoom); // <- 4
     }
   });
+
 });
 
-
-
+  //handle resignation
+  socket.on('resignation', async (playerData) => {
+    console.log('resign triggers')
+    const gameRooms = Array.from(rooms.values());
+  
+    gameRooms.forEach(async (room) => {
+      const resignBy = room.players.find((player) => player.id === playerData.id);
+  
+      if (resignBy) {
+        const winner = room.players.find((player) => player.id !== playerData.id);
+  
+        await Player.findByIdAndUpdate(
+          socket.data.playerData._id,
+          { $inc: { rating: -10 } },
+          { new: true }
+        );
+        await Player.findByIdAndUpdate(
+          winner.dbId,
+          { $inc: { rating: +10 } },
+          { new: true }
+        );
+         console.log(resignBy, room.roomId)
+         socket.to(room.roomId).emit("resignation", resignBy);
+      }
+    });
+  });
+  
 
 });
   

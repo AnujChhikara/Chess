@@ -25,7 +25,6 @@ export default function StartGame() {
     if (isAuth) {
       const response  = await getPlayerbyId({id:player.playerData[0].id})
       if(response.status === true){
-        console.log(response.data)
         const data = response.data
         socket.emit("playerData", data);
        }
