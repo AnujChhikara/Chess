@@ -55,8 +55,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinQueue', async () => {
-        console.log('joinQueueTriggered')
-       
+   
     waitingPlayers.push(socket);
 
     if (waitingPlayers.length >= 2) {
@@ -73,17 +72,23 @@ io.on('connection', (socket) => {
                 { id: player2.id, playername: player2.data?.playerData.playername,dbId:player2.data?.playerData._id, color:"black", index:1, rating:player2.data?.playerData.rating}
             ], 
         };
-        
-        // Create and save ChessGame document into MongoDB
+         //making sure player dont match himself
+        if(roomData.players[0].dbId === roomData.players[1].dbId ){
+          return
+        }
+         else{
+                // Create and save ChessGame document into MongoDB
      await ChessGame.create({
-        gameId: roomId,
-        players: [player1.data?.playerData.playername,player2.data?.playerData.playername],
-        status: 'pending'
-      });
-        rooms.set(roomId, roomData);
-        player1.emit('matchFound', roomData);
-        player2.emit('matchFound', roomData);
-    }
+      gameId: roomId,
+      players: [player1.data?.playerData.playername,player2.data?.playerData.playername],
+      status: 'pending'
+    });
+      rooms.set(roomId, roomData);
+      player1.emit('matchFound', roomData);
+      player2.emit('matchFound', roomData);
+  }
+         }
+     
 });
 
 
@@ -101,32 +106,44 @@ socket.on('move', async (data) => {
 });
 
  // Handling disconnection
- socket.on("disconnect",  () => {
+ socket.on("disconnect", () => {
   const gameRooms = Array.from(rooms.values()); // <- 1
 
   //finding disconnected player in any room
-  gameRooms.forEach(async (room) => { // <- 2
-    const userInRoom = room.players.find((player) => player.id === socket.id); // <- 3
-
+  gameRooms.forEach(async (currentRoom) => { // <- 2 (renamed to currentRoom)
+    const userInRoom = currentRoom.players.find((player) => player.id === socket.id); 
     if (userInRoom) {
-      if (room.players.length < 2) {
+      if (currentRoom.players.length < 2) {
         // if there's only 1 player in the room, close it and exit.
-        rooms.delete(room.roomId);
+        rooms.delete(currentRoom.roomId);
         return;
       }
-   
-      const looser = userInRoom
-      const winner = room.players[userInRoom.index === 0? 1: 0]
-      await Player.findByIdAndUpdate(looser.dbId, 
-        { $inc: { rating: -10} },
-        { new: true } 
-      )
-        await Player.findByIdAndUpdate(winner.dbId, 
-          { $inc: { rating: +10} },
-          { new: true } 
-        )
 
-      socket.to(room.roomId).emit("playerDisconnected", userInRoom); // <- 4
+      const looser = userInRoom;
+      const winner = currentRoom.players[userInRoom.index === 0 ? 1 : 0];
+
+      await Player.findByIdAndUpdate(looser.dbId, 
+        { $inc: { rating: -10 } },
+        { new: true } 
+      );
+
+      await Player.findByIdAndUpdate(winner.dbId, 
+        { $inc: { rating: +10 } },
+        { new: true } 
+      );
+
+      const updatedRoom = await ChessGame.findOneAndUpdate({ gameId: currentRoom.roomId }, {
+        status: 'finished'
+      }, {
+        new: true
+      });
+
+
+      if (!updatedRoom) {
+        console.log('Cannot find room');
+      }
+
+      socket.to(currentRoom.roomId).emit("playerDisconnected", userInRoom); // <- 4
     }
   });
 
@@ -140,6 +157,12 @@ socket.on('move', async (data) => {
       const resignBy = room.players.find((player) => player.id === playerData.id);
   
       if (resignBy) {
+       
+          if (room.players.length < 2) {
+            // if there's only 1 player in the room, close it and exit.
+            rooms.delete(room.roomId);
+            return;
+          }
         const winner = room.players.find((player) => player.id !== playerData.id);
   
         await Player.findByIdAndUpdate(
@@ -152,6 +175,18 @@ socket.on('move', async (data) => {
           { $inc: { rating: +10 } },
           { new: true }
         );
+
+        const updatedRoom = await ChessGame.findOneAndUpdate({ gameId: room.roomId }, {
+          status: 'finished'
+        }, {
+          new: true
+        });
+  
+
+  
+        if (!updatedRoom) {
+          console.log('Cannot find room');
+        }
          socket.to(room.roomId).emit("resignation", resignBy);
       }
     });
@@ -173,7 +208,7 @@ socket.on('move', async (data) => {
     });
   });
 
-
+console.log(waitingPlayers)
   //handle draw response
   socket.on('drawResponse', (data) => {
 
