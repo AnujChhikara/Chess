@@ -32,6 +32,7 @@ export default function LoginPage() {
       if(response.ok){
          const res_data = await response.json()
          const playerData = res_data.data
+         console.log(playerData)
          if(playerData){
           dispatch(playerActions.updateUser({
             playername:playerData.playername,

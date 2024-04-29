@@ -1,3 +1,4 @@
+import { ChessGame } from "../models/game.model.js";
 import { Player } from "../models/player.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
@@ -95,8 +96,21 @@ const getPlayerDetails = asyncHandler(async(req,res)=> {
    return res.status(200).json({msg:"user deatils fetch successfully", data:player})
 })
 
+const getPlayerGames = asyncHandler(async(req,res) => {
+    const {playername} = req.params
+
+    const playerGames = await ChessGame.find({players: playername})
+
+    if(!playerGames){
+      return res.status(400).json({msg:'No game found'})
+    } 
+
+    return res.status(200).json({msg:'games fetch successfully', games:playerGames})
+})
+
 
 export {
    registerPlayer,
    loginPlayer,
-   getPlayerDetails}
+   getPlayerDetails,
+getPlayerGames }

@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage'
 import LoginPage from "./pages/LoginPage";
 import PlayWithComputer from "./pages/PlayWithComputer";
+import PlayerProfile from "./pages/PlayerProfile";
 
 function App() {
 
@@ -17,7 +18,7 @@ function App() {
         <Route path="/register" element={<RegisterPage/>} />
         <Route path="/login" element={<LoginPage/>} />
         <Route path="/playVsComputer" element={<PlayWithComputer/>} />
- 
+        <Route path="/profile" element={<PlayerProfile/>} />
         <Route path="/liveGame" element={<PlayingGamePage/>} />
       </Routes>
       </BrowserRouter>

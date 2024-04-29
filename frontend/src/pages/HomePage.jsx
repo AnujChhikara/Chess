@@ -61,12 +61,12 @@ return (
 }{
   isAuth && 
   <div className="bg-black">
-    <div className="text-end pt-6 pr-6">
+    <Link to='/profile' className="text-end pt-6 pr-6">
       <span className=" cursor-pointer"><span className="bg-zinc-800 px-4 py-2 text-lg rounded-md font-bold ">{player.playerData[0].playername}</span>
       <div className="mt-2 text-lg rounded-md font-bold ">Current Rating: {player.playerData[0].rating}</div>
       </span>
       
-  </div>
+  </Link>
       
   <div className=" text-white min-h-screen flex flex-col justify-start  items-center">
   <h1 className="text-4xl font-bold mb-2">Welcome to Chess Online</h1>
