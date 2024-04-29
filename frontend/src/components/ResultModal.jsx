@@ -7,10 +7,11 @@ import Modal from 'react-awesome-modal';
 import socket from '../socket'
 
 
-export default function ResultModal({gameStatus, result, cleanup,closeModal, playerData}) {
-    
+export default function ResultModal({gameStatus, result, cleanup, playerData, isModalOpen}) {
+    const openValue = gameStatus || isModalOpen
     const [searchingMatch, setSearchingMatch] = useState(false) 
-    const[isOpen, setIsOpen] = useState(gameStatus)
+    const[isOpen, setIsOpen] = useState(openValue)
+
   
       const handleCloseModal = () => {
         console.log('click')
@@ -22,11 +23,13 @@ export default function ResultModal({gameStatus, result, cleanup,closeModal, pla
       setSearchingMatch(true)
       socket.emit('joinQueue');
     };
+
+
    
       
   return (
     <Modal className=""
-     visible={closeModal ? false : isOpen}
+     visible={isOpen}
         width="300"
         height="400"
         effect="fadeInUp"
@@ -106,7 +109,30 @@ export default function ResultModal({gameStatus, result, cleanup,closeModal, pla
       </div>
         
            
-      }         
+      }  
+       {
+        result.status === 'timeout' && <div className=''>
+          {result.winner === playerData.color? <div className='px-2 flex justify-around items-center pt-4'>
+            <img className='w-12' src="https://www.svgrepo.com/show/484306/trophy.svg" alt="" />
+            
+            <div className='flex flex-col text-center'>
+            <h4 className='font-bold text-2xl'>You Won!</h4>
+            <p className='text-sm text-gray-400'>other player time runs out</p>
+            </div>
+        <button onClick={handleCloseModal}><img className='w-5' src="https://www.svgrepo.com/show/522087/cross.svg" alt="" /></button>
+
+          </div> : <div  className='px-2 flex justify-around items-center pt-4'>
+          <img className='w-16' src="https://www.svgrepo.com/show/348920/sad.svg" alt="" />
+          <div className='flex flex-col text-center'>
+            <h4 className='font-bold text-2xl'>You Lost!</h4>
+            <p className='text-sm text-gray-400'>on time!</p>
+            </div>
+        <button onClick={handleCloseModal}><img className='w-5' src="https://www.svgrepo.com/show/522087/cross.svg" alt="" /></button>
+          </div> }
+           
+     
+        </div>
+      }       
      </div>
      <div className=' flex justify-center pt-8'>
     {

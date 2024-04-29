@@ -8,13 +8,18 @@ export default function PlayingGamePage() {
   
   const [room, setRoom] = useState("");
   const [players, setPlayers] = useState([]);
-  const[closeModal, setCloseModal] = useState(false)
+  const[isModalOpen, setIsModalOpen] = useState(false)
+
+  const cleanup = useCallback(() => {
+    setRoom("");
+    setPlayers([]);
+    setIsModalOpen(false)
+  }, []);
 
   useEffect(() => {
     socket.on("matchFound", (roomData) => {
-      setCloseModal(true)
-      console.log('macthfound')
-      console.log(roomData)
+      cleanup()
+      setIsModalOpen(true)
       setRoom(roomData.roomId);
       setPlayers(roomData.players);
     });
@@ -22,23 +27,19 @@ export default function PlayingGamePage() {
     return () => {
       socket.off("matchFound"); // Clean up event listener
     };
-  }, []);
+  }, [cleanup]);
 
-  const cleanup = useCallback(() => {
-    setRoom("");
-    setPlayers("");
-
-  }, []);
+ 
 
   return (
     <div>
       {room ? (
         
         <Game
-          closeModal={closeModal}
           room={room}
           players={players}
           cleanup={cleanup}
+          isModalOpne={isModalOpen}
         />
 
       ) : ( 

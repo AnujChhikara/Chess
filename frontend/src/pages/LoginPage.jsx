@@ -63,7 +63,7 @@ export default function LoginPage() {
   }
   
   return (
-    <div className="flex w-screen h-screen justify-center space-x-20 items-center">
+    <div className="flex w-screen h-screen bg-black justify-center space-x-20 items-center">
       <img src="https://images.unsplash.com/photo-1634702689077-298371d09d23?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y2hlc3N8ZW58MHwxfDB8fHww"
       className="h-[500px] rounded-2xl shadow-md shadow-white" alt="" />
       
@@ -97,10 +97,10 @@ export default function LoginPage() {
                   
                   <div className='flex flex-col justify-center items-center space-y-4 pt-6'>
                   {
-                    isProcessing && <button className='bg-black animate-pulse opacity-90 w-72 text-white hover:opacity-90 duration-500 px-4 py-4 rounded'>Logging in...</button>
+                    isProcessing && <button className='bg-zinc-800   animate-pulse opacity-90 w-72 text-white hover:opacity-90 duration-500 px-4 py-4 rounded'>Logging in...</button>
                   }
                   {
-                    !isProcessing && <button className='bg-black w-72  text-white  hover:bg-opacity-80 duration-500 px-4 py-4 rounded'>Log in</button>
+                    !isProcessing && <button className='bg-zinc-800 w-72  text-white  hover:bg-opacity-80 duration-500 px-4 py-4 rounded'>Log in</button>
                   }
                   
                   </div>

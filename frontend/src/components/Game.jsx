@@ -11,8 +11,8 @@ function formatTime(time) {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-function Game({ players, room, cleanup, closeModal}) {
-    
+function Game({ players, room,cleanup, isModalOpen}) {
+
   const chess = useMemo(() => new Chess(), []); 
   const [fen, setFen] = useState(chess.fen()); 
   const [result, setResult] = useState({
@@ -21,12 +21,30 @@ function Game({ players, room, cleanup, closeModal}) {
   });
   const [gameStatus, setGameStatus] = useState(false)
   const [isResign, setIsResign] = useState(false)
-  const[playerData, setPlayerData] = useState('')
-  const[whiteTimer, setWhiteTimer] = useState(600)
-  const[blackTimer, setBlackTimer] = useState(600)
-  const[drawOffered, setDrawOffered] = useState(false)
-   const whoseTurn = chess.turn()
+  const [playerData, setPlayerData] = useState('')
+  const [whiteTimer, setWhiteTimer] = useState(300)
+  const [blackTimer, setBlackTimer] = useState(300)
+  const [drawOffered, setDrawOffered] = useState(false)
+  const whoseTurn = chess.turn()
  
+
+  useEffect(() => {
+    if (whiteTimer === 0 || blackTimer === 0) {
+      setGameStatus(true);
+      setResult({
+        status: 'timeout',
+        winner: whiteTimer === 0 ? 'black' : 'white'
+      });
+    }
+  }, [whiteTimer, blackTimer]);
+
+  useEffect(()=>{
+    setBlackTimer(300)
+    setWhiteTimer(300)
+    chess.reset();
+    setFen(chess.fen());
+    setGameStatus(false)
+  }, [room, chess])
 
   useEffect(()=> {
     if(players.length > 0){
@@ -182,10 +200,9 @@ function Game({ players, room, cleanup, closeModal}) {
   }, [playerData]);
 
 
-
-  useEffect(() => {
-    
-      const interval = setInterval(() => {
+//gonna fix the render this causing****
+  useEffect(() => { 
+    const interval = setInterval(() => {
         if (whoseTurn === "b") {
           setWhiteTimer((prev) => (prev > 0 ? prev - 1 : prev)); // Decrease white timer
         } else {
@@ -206,7 +223,7 @@ function Game({ players, room, cleanup, closeModal}) {
        
         <div className={`px-20 pt-20 flex bg-black  space-x-8`}>
         {playerData && <div>
-          {gameStatus && <ResultModal closeModal={closeModal} result={result} gameStatus={gameStatus} playerData={playerData} roomId={room} cleanup={cleanup}/>}
+          {gameStatus && <ResultModal  result={result} gameStatus={gameStatus} playerData={playerData}  isModalOpen={isModalOpen} cleanup={cleanup}/>}
         
 
           <div>  

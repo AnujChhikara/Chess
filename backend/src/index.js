@@ -81,7 +81,6 @@ io.on('connection', (socket) => {
         status: 'pending'
       });
         rooms.set(roomId, roomData);
-      
         player1.emit('matchFound', roomData);
         player2.emit('matchFound', roomData);
     }

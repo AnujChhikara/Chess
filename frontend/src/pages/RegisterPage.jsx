@@ -47,7 +47,7 @@ export default function RegisterPage() {
   }
   
   return (
-    <div className="flex w-screen h-screen justify-center space-x-20 items-center">
+    <div className="flex bg-black w-screen h-screen justify-center space-x-20 items-center">
       <img src="https://images.unsplash.com/photo-1634702689077-298371d09d23?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y2hlc3N8ZW58MHwxfDB8fHww"
       className="h-[500px] rounded-2xl shadow-md shadow-white" alt="" />
       
@@ -68,10 +68,10 @@ export default function RegisterPage() {
                 <input className="w-72 px-4 py-2 rounded-3xl text-black font-semibold" name="password" placeholder="password" type="password" required   />  
 
                 {
-                  isProcessing && <button type='submit' className='bg-black animate-pulse opacity-90 w-72 text-white hover:opacity-90 duration-500 px-4 py-4 rounded'>Registering user</button>
+                  isProcessing && <button type='submit' className='bg-zinc-800  animate-pulse opacity-90 w-72 text-white hover:opacity-90 duration-500 px-4 py-4 rounded'>Registering user</button>
                 }
                 {
-                  !isProcessing && <button type='submit' className='bg-black w-72  text-white  hover:bg-opacity-80 duration-500 px-4 py-4 rounded'>Register</button>
+                  !isProcessing && <button type='submit' className='bg-zinc-800  w-72  text-white  hover:bg-opacity-80 duration-500 px-4 py-4 rounded'>Register</button>
                 }
                          
                 <p className='text-[16px] text-gray-300'>Already registered? <Link to='/login' className='font-bold underline '>Login</Link></p>
