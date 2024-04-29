@@ -42,7 +42,7 @@ connectDB()
 
 const rooms = new Map();
 const waitingPlayers = [];
-const rematchPlayers = [];
+
 
 // socket.io connection
 io.on('connection', (socket) => {
@@ -76,7 +76,8 @@ io.on('connection', (socket) => {
         if(roomData.players[0].dbId === roomData.players[1].dbId ){
           return
         }
-         else{
+         
+          console.log('different players')
                 // Create and save ChessGame document into MongoDB
      await ChessGame.create({
       gameId: roomId,
@@ -87,12 +88,12 @@ io.on('connection', (socket) => {
       player1.emit('matchFound', roomData);
       player2.emit('matchFound', roomData);
   }
-         }
+       
      
 });
 
 
- 
+ //handle player moves
 socket.on('move', async (data) => {
   // Emit move event to other clients
   socket.to(data.room).emit('move', data.move);
@@ -131,17 +132,12 @@ socket.on('move', async (data) => {
         { $inc: { rating: +10 } },
         { new: true } 
       );
-
-      const updatedRoom = await ChessGame.findOneAndUpdate({ gameId: currentRoom.roomId }, {
+        await ChessGame.findOneAndUpdate({ gameId: currentRoom.roomId }, {
         status: 'finished'
       }, {
         new: true
       });
 
-
-      if (!updatedRoom) {
-        console.log('Cannot find room');
-      }
 
       socket.to(currentRoom.roomId).emit("playerDisconnected", userInRoom); // <- 4
     }
@@ -208,7 +204,6 @@ socket.on('move', async (data) => {
     });
   });
 
-console.log(waitingPlayers)
   //handle draw response
   socket.on('drawResponse', (data) => {
 

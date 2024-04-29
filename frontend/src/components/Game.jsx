@@ -25,6 +25,7 @@ function Game({ players, room,cleanup, isModalOpen}) {
   const [whiteTimer, setWhiteTimer] = useState(300)
   const [blackTimer, setBlackTimer] = useState(300)
   const [drawOffered, setDrawOffered] = useState(false)
+  const[offeringDraw, setOfferingDraw] = useState(false)
   const whoseTurn = chess.turn()
  
 
@@ -166,6 +167,7 @@ function Game({ players, room,cleanup, isModalOpen}) {
   //handle draw offer
 
   const handleDrawOffer = () => {
+    setOfferingDraw(true)
     socket.emit('drawOffer', playerData)
   }
 
@@ -183,7 +185,7 @@ function Game({ players, room,cleanup, isModalOpen}) {
       setResult({
         status:'draw',
         winner:''})
-    }
+    } 
   };
 
   //draw accepted or not
@@ -195,9 +197,14 @@ function Game({ players, room,cleanup, isModalOpen}) {
         status:'draw',
         winner: ''
       }); 
-     }
+     
+     } 
+     else{
+      setOfferingDraw(false)
+      
+    }
     });
-  }, [playerData]);
+  }, [playerData, setOfferingDraw]);
 
 
 //gonna fix the render this causing****
@@ -257,9 +264,12 @@ function Game({ players, room,cleanup, isModalOpen}) {
             </svg>
             </button>
 
-            <button onClick={handleDrawOffer} className="bg-zinc-900 p-2 rounded font-bold w-12">
-              1/2
-            </button>
+            {
+            drawOffered? <div></div>:
+            offeringDraw ? <p className="text-gray-400 animate-pulse">waiting for other player response.</p> :<button onClick={handleDrawOffer} className="bg-zinc-900 p-2 rounded font-bold w-12">
+            1/2
+          </button>
+           }
             <div className={`text-lg bg-zinc-800 px-4 flex space-x-2 py-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(blackTimer)}</p> {playerData.playername}({playerData.rating})</div>
            </div>
            </div>
@@ -288,9 +298,13 @@ function Game({ players, room,cleanup, isModalOpen}) {
             </svg>
             </button>
 
-            <button onClick={handleDrawOffer} className="bg-zinc-900 p-2 rounded font-bold w-12">
-              1/2
-            </button>
+         
+            {
+            drawOffered? <div></div>:
+            offeringDraw ? <p className="text-gray-400 animate-pulse">waiting for other player response.</p> :<button onClick={handleDrawOffer} className="bg-zinc-900 p-2 rounded font-bold w-12">
+            1/2
+          </button>
+           }
               <div className={`text-lg bg-zinc-800 px-4 py-2 flex space-x-2 rounded-md font-bold `}><p className="bg-black px-2 py-1 rounded-lg mr-3">{formatTime(whiteTimer)}</p> {playerData.playername}({playerData.rating})</div>
             </div>
            
