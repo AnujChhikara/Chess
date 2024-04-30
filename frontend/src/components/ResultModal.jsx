@@ -2,19 +2,20 @@
 /* eslint-disable react/prop-types */
 
 
-import {useState } from 'react';
+import {useEffect, useState } from 'react';
 import Modal from 'react-awesome-modal';
 import socket from '../socket'
 
 
 export default function ResultModal({gameStatus, result, cleanup, playerData, isModalOpen}) {
     const openValue = gameStatus || isModalOpen
-    const [searchingMatch, setSearchingMatch] = useState(false) 
+    const [searchingMatch, setSearchingMatch] = useState(false)
+    const [rematchOffer, setRematchOffer] = useState(false)
+    const [rematchResponse, setRematchResponse] = useState(false)
     const[isOpen, setIsOpen] = useState(openValue)
 
   
       const handleCloseModal = () => {
-        console.log('click')
         cleanup()
         setIsOpen(false)
       }
@@ -23,10 +24,27 @@ export default function ResultModal({gameStatus, result, cleanup, playerData, is
       setSearchingMatch(true)
       socket.emit('joinQueue');
     };
+    const handleRematchOffer = () => {
+      setRematchOffer(true)
+      socket.emit('rematch', playerData)
+    }
+  
+    useEffect(() => { 
+      socket.on('rematch' , () => {
+      setRematchResponse(true)
+      });
+    }, []);
+  
+    const handleRematchResponse = (response) => {
+      setRematchOffer(false)
+      if(response){
+       setIsOpen(false)
+      }
+      socket.emit('rematchResponse', { playerData: playerData, response: response}) 
+    };
+    
 
 
-   
-      
   return (
     <Modal className=""
      visible={isOpen}
@@ -139,6 +157,19 @@ export default function ResultModal({gameStatus, result, cleanup, playerData, is
       searchingMatch? <button disabled className='bg-green-500 animate-pulse text-lg font-bold px-6 py-2 rounded-xl'>finding players..</button>:
       <button onClick={handleJoinQueue} className='bg-green-500 text-lg font-bold px-6 py-2 rounded-xl'>New Match</button>
     }
+    {
+      rematchResponse?
+       <div>
+        <p>rematch offered</p>
+        <div className="flex justify-around ">
+       <button onClick={() => handleRematchResponse(true)} className="bg-zinc-900 px-2 py-1 rounded-lg">Accept</button> 
+       <button onClick={() => handleRematchResponse(false)} className="bg-zinc-900 px-2 py-1 rounded-lg">Decline</button>
+       </div></div>:   
+        rematchOffer? <button disabled className='bg-green-500 animate-pulse text-lg font-bold px-6 py-2 rounded-xl'> waiting for response</button>:
+        <button onClick={handleRematchOffer} className='bg-green-500 text-lg font-bold px-6 py-2 rounded-xl'>Rematch</button>
+      
+    }
+    
 </div>
 
     

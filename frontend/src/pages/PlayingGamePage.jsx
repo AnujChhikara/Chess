@@ -18,10 +18,12 @@ export default function PlayingGamePage() {
 
   useEffect(() => {
     socket.on("matchFound", (roomData) => {
+      console.log('triggered---')
       cleanup()
       setIsModalOpen(true)
       setRoom(roomData.roomId);
       setPlayers(roomData.players);
+      console.log('triggeredaferState')
     });
   
     return () => {

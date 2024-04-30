@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
     if (waitingPlayers.length >= 2) {
         const player1 = waitingPlayers.shift();
         const player2 = waitingPlayers.shift();
-        
+
         const roomId = uuidV4();
         player1.join(roomId);
         player2.join(roomId);
@@ -77,7 +77,6 @@ io.on('connection', (socket) => {
           return
         }
          
-          console.log('different players')
                 // Create and save ChessGame document into MongoDB
      await ChessGame.create({
       gameId: roomId,
@@ -229,7 +228,57 @@ socket.on('move', async (data) => {
 
       })
    
+//handle rematch
+
+//reamtch offer
+
+//offering rematch
+  socket.on('rematch', (playerData) => {
+   const gameRooms = Array.from(rooms.values());
   
+   gameRooms.forEach(async (room) => {
+     const reamtchOfferBy = room.players.find((player) => player.id === playerData.id);
+ 
+     if (reamtchOfferBy) {
+        socket.to(room.roomId).emit("rematch");
+     }
+   });
+
+  });
+
+  //handle rematch response 
+   socket.on('rematchResponse', (data) => {
+
+    const gameRooms = Array.from(rooms.values());
+  console.log('rematchReposne triggered')
+    gameRooms.forEach(async (room) => {
+      const rematchResponse = room.players.find((player) => player.id === data.playerData.id);
+
+      if(data.response) {
+        const players = room.players
+        const roomId = uuidV4();
+        const roomData = {
+          roomId,
+          players: [
+              { id: players[0].id, playername: players[0].playername,dbId:players[0].dbId, color:"white", index:0, rating:players[0].rating },
+              { id: players[1].id, playername: players[1].playername,dbId:players[1].dbId, color:"black", index:1, rating:players[1].rating }
+          ], 
+      };
+
+      console.log(roomData)
+      if(roomData.players[0].dbId === roomData.players[1].dbId ){
+        return
+      }
+      rooms.set(roomId, roomData);
+      
+      socket.to(players[0].id).emit('matchFound', roomData);
+      socket.to(players[1].id).emit('matchFound', roomData);
+  
+      }
+     
+    });
+
+      })
   
   
 
