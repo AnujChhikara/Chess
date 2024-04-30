@@ -61,12 +61,14 @@ return (
 }{
   isAuth && 
   <div className="bg-black">
+    <div className="flex justify-end">
     <Link to='/profile' className="text-end pt-6 pr-6">
-      <span className=" cursor-pointer"><span className="bg-zinc-800 px-4 py-2 text-lg rounded-md font-bold ">{player.playerData[0].playername}</span>
-      <div className="mt-2 text-lg rounded-md font-bold ">Current Rating: {player.playerData[0].rating}</div>
-      </span>
-      
+      <div className="bg-zinc-800 flex hover:opacity-75 duration-500 space-x-2 items-center px-4 py-2 text-lg rounded-md cursor-pointer">
+        <img className="w-7 rounded-full" src="https://www.svgrepo.com/show/507442/user-circle.svg" alt="" />
+        <h2 className=" font-bold ">{player.playerData[0].playername.toUpperCase()}</h2>
+      </div>
   </Link>
+  </div>
       
   <div className=" text-white min-h-screen flex flex-col justify-start  items-center">
   <h1 className="text-4xl font-bold mb-2">Welcome to Chess Online</h1>

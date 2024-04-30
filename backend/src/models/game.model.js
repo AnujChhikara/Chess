@@ -27,8 +27,8 @@ const chessGameSchema = new mongoose.Schema({
         default: 'pending'
       },
       winner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Player'
+        type: String,
+
       },
 
 },{timestamps:true})

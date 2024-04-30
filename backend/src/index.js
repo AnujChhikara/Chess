@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
     if (waitingPlayers.length >= 2) {
         const player1 = waitingPlayers.shift();
         const player2 = waitingPlayers.shift();
-
+        
         const roomId = uuidV4();
         player1.join(roomId);
         player2.join(roomId);
@@ -133,7 +133,8 @@ socket.on('move', async (data) => {
         { new: true } 
       );
         await ChessGame.findOneAndUpdate({ gameId: currentRoom.roomId }, {
-        status: 'finished'
+        status: 'finished',
+        winner:winner.playername
       }, {
         new: true
       });
@@ -160,7 +161,6 @@ socket.on('move', async (data) => {
             return;
           }
         const winner = room.players.find((player) => player.id !== playerData.id);
-  
         await Player.findByIdAndUpdate(
           socket.data.playerData._id,
           { $inc: { rating: -10 } },
@@ -173,7 +173,9 @@ socket.on('move', async (data) => {
         );
 
         const updatedRoom = await ChessGame.findOneAndUpdate({ gameId: room.roomId }, {
-          status: 'finished'
+          status: 'finished', 
+          winner: winner.playername
+          
         }, {
           new: true
         });
@@ -213,6 +215,11 @@ socket.on('move', async (data) => {
       const drawResponse = room.players.find((player) => player.id === data.playerData.id);
   
       if (data.response) {
+        const updatedRoom = await ChessGame.findOneAndUpdate({ gameId: room.roomId }, {
+          status: 'finished', winner:'draw'
+        }, {
+          new: true
+        });
          socket.to(room.roomId).emit("drawResponse", true);
       } 
       else{
