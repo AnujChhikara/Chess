@@ -192,6 +192,7 @@ function Game({ players, room,cleanup, isModalOpen}) {
   useEffect(() => {
     socket.on('drawResponse', (response) => {
      if(response){
+      setOfferingDraw(false)
       setGameStatus(true)
       setResult({
         status:'draw',

@@ -108,9 +108,17 @@ const getPlayerGames = asyncHandler(async(req,res) => {
     return res.status(200).json({msg:'games fetch successfully', games:playerGames})
 })
 
+const getAllPlayers = await asyncHandler(async(req,res) => {
+   const allPlayers = await Player.find()
+   if(!allPlayers){
+      return res.status(400).json({msg:"failed to fetch players"})
+   }
+   return res.status(200).json({msg:"All players fetch successfully", data:allPlayers})
+})
+
 
 export {
    registerPlayer,
    loginPlayer,
    getPlayerDetails,
-getPlayerGames }
+getPlayerGames, getAllPlayers }

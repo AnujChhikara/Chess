@@ -152,21 +152,21 @@ export default function ResultModal({gameStatus, result, cleanup, playerData, is
         </div>
       }       
      </div>
-     <div className=' flex justify-center pt-8'>
+     <div className=' flex flex-col items-center space-y-4 justify-center pt-8'>
     {
-      searchingMatch? <button disabled className='bg-green-500 animate-pulse text-lg font-bold px-6 py-2 rounded-xl'>finding players..</button>:
-      <button onClick={handleJoinQueue} className='bg-green-500 text-lg font-bold px-6 py-2 rounded-xl'>New Match</button>
+      searchingMatch? <button disabled className='bg-green-500 w-40 animate-pulse text-md font-bold px-4 py-2 rounded-xl'>finding players..</button>:
+      <button onClick={handleJoinQueue} className='bg-green-500 w-40 text-md font-bold px-4 py-2 rounded-xl'>New Match</button>
     }
     {
       rematchResponse?
        <div>
-        <p>rematch offered</p>
-        <div className="flex justify-around ">
+        <p className='font-bold'>rematch offered?</p>
+        <div className="flex space-x-2 mt-2">
        <button onClick={() => handleRematchResponse(true)} className="bg-zinc-900 px-2 py-1 rounded-lg">Accept</button> 
        <button onClick={() => handleRematchResponse(false)} className="bg-zinc-900 px-2 py-1 rounded-lg">Decline</button>
        </div></div>:   
-        rematchOffer? <button disabled className='bg-green-500 animate-pulse text-lg font-bold px-6 py-2 rounded-xl'> waiting for response</button>:
-        <button onClick={handleRematchOffer} className='bg-green-500 text-lg font-bold px-6 py-2 rounded-xl'>Rematch</button>
+        rematchOffer? <button disabled className='bg-green-500 w-40 animate-pulse text-sm font-bold px-4 py-2 rounded-xl'>Rematch requested</button>:
+        <button onClick={handleRematchOffer} className='bg-green-500 w-40 text-md font-bold px-4 py-2 rounded-xl'>Rematch</button>
       
     }
     

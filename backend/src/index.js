@@ -247,43 +247,58 @@ socket.on('move', async (data) => {
   });
 
   //handle rematch response 
-   socket.on('rematchResponse', (data) => {
-
-    const gameRooms = Array.from(rooms.values());
-  console.log('rematchReposne triggered')
-    gameRooms.forEach(async (room) => {
-      const rematchResponse = room.players.find((player) => player.id === data.playerData.id);
-
-      if(data.response) {
-        const players = room.players
+// Handle rematch response
+socket.on('rematchResponse', (data) => {
+  console.log('tiggegr rematch')
+  const gameRooms = Array.from(rooms.values());
+  
+  gameRooms.forEach(async (room) => {
+    const player = room.players.find((player) => player.id === data.playerData.id);
+    if (!player) {
+      console.log('tiggegr rematch2')
+        return; // Player not found in the room, handle error
+    }
+    if (data.response) {
+      console.log('tiggegr rematch3')
+      console.log(room)
+        // Player accepted the rematch, proceed with rematch logic
+        const player1 = room.players[0].id
+        const player2 = room.players[1].id
+  
+        if (!player1 || !player2) {
+          console.log('tiggegr rematch4')
+            return; // Handle error, socket instances not found
+        }
+  
+        // Your rematch logic here...
+        // For example:
         const roomId = uuidV4();
+        player1.join(roomId);
+        player2.join(roomId);
+  
         const roomData = {
-          roomId,
-          players: [
-              { id: players[0].id, playername: players[0].playername,dbId:players[0].dbId, color:"white", index:0, rating:players[0].rating },
-              { id: players[1].id, playername: players[1].playername,dbId:players[1].dbId, color:"black", index:1, rating:players[1].rating }
-          ], 
-      };
-
-      console.log(roomData)
-      if(roomData.players[0].dbId === roomData.players[1].dbId ){
-        return
-      }
-      rooms.set(roomId, roomData);
-      
-      socket.to(players[0].id).emit('matchFound', roomData);
-      socket.to(players[1].id).emit('matchFound', roomData);
+            roomId,
+            players: room.players, // Keep the same players
+            status: 'pending' // Reset the status for rematch
+        };
   
-      }
-     
-    });
-
-      })
+        rooms.set(roomId, roomData); // Update room data
+        console.log('tiggegr rematch5')
+        // Emit 'matchFound' event to both players
+        player1.emit('matchFound', roomData);
+        player2.emit('matchFound', roomData);
+    } else {
+        // Player declined the rematch, handle accordingly
+        // For example:
+        console.log('Player declined the rematch');
+    }
+  
+  })
   
   
-
+  
+});
 });
   
-
 
 
